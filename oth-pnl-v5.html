@@ -203,16 +203,19 @@ function render(){
   // Add computed rows that don't exist in the BQ data
   for(const[k,row] of Object.entries(COMPUTED)){if(!d.pnl.find(r=>r[0]===k))d.pnl.push(row);}
 
-  const noiv=noirRow[4+t1],lnoiv=lnoirRow[4+t1];
+  // Find latest month with data (GPR > 0)
+  let latest=t1;
+  for(let i=t1;i>=0;i--){if(gV(gprRow,i)>0){latest=i;break;}}
+  const noiv=noirRow[4+latest],lnoiv=lnoirRow[4+latest];
   document.getElementById("kpis").innerHTML=[
-    {label:"GPR",val:fmtN(gV(gprRow,t1)),sub:P[t1]},
-    {label:"ERI",val:fmtN(gV(eirRow,t1)),sub:P[t1]},
-    {label:"Unlevered NOI",val:fmtN(noiv),neg:noiv<0,sub:P[t1]},
-    {label:"Levered NOI",val:fmtN(lnoiv),neg:lnoiv<0,sub:P[t1]},
-    {label:"Physical Occ",val:fmtN(gV(physRow,t1),"pct"),sub:d.units?d.units+" units":"—"},
+    {label:"GPR",val:fmtN(gV(gprRow,latest)),sub:P[latest]},
+    {label:"ERI",val:fmtN(gV(eirRow,latest)),sub:P[latest]},
+    {label:"Unlevered NOI",val:fmtN(noiv),neg:noiv<0,sub:P[latest]},
+    {label:"Levered NOI",val:fmtN(lnoiv),neg:lnoiv<0,sub:P[latest]},
+    {label:"Physical Occ",val:fmtN(gV(physRow,latest),"pct"),sub:d.units?d.units+" units":"—"},
   ].map(k=>`<div class="kpi"><div class="kpi-label">${k.label}</div><div class="kpi-value ${k.neg?"neg":""}">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join("");
 
-  const pp=(gV(physRow,t1)*100).toFixed(1),ep=(gV(econRow,t1)*100).toFixed(1);
+  const pp=(gV(physRow,latest)*100).toFixed(1),ep=(gV(econRow,latest)*100).toFixed(1);
   document.getElementById("occGrid").innerHTML=`
     <div class="occ-card"><div class="occ-label">Physical Occupancy</div><div class="occ-val">${pp}%</div><div class="occ-bar"><div class="occ-fill" style="width:${Math.min(parseFloat(pp),100)}%"></div></div></div>
     <div class="occ-card"><div class="occ-label">Economic Occupancy</div><div class="occ-val">${ep}%</div><div class="occ-bar"><div class="occ-fill" style="width:${Math.min(parseFloat(ep),100)}%"></div></div></div>
