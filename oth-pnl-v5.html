@@ -364,14 +364,11 @@ function renderBS(){
     ap:'Accounts Payable',accrued_interest:'Accrued Interest',accrued_expenses:'Accrued Expenses',
     prepaid_rent:'Prepaid Rent',tax_payable:'Property Taxes Payable',sd_payable:'Security Deposits Payable',
     mortgage:'Mortgage Payable',gp_equity:'GP Fund Equity',lp_equity:'LP Equity',distributions:'Distributions',retained_earnings:'Retained Earnings'};
-  // Per-property LP equity labels
-  const lpLabels={'18B':'Pearlmark LP Equity','ML':'Arrowmark Equity','AAH':'Sound Mark Equity',
-    'HOH':'RockFarmer Equity','SRP':'Sound Mark Equity','FRP':'Red Stone LP Equity',
-    'LPL':'McCallum Capital','WSP':'Capital Commitment','SS':'Red Stone Equity'};
-  if(lpLabels[pid]) labels.lp_equity=lpLabels[pid];
-  // Properties without GP Fund equity
-  const noGP=new Set(['LPL','WSP','616','A36','SS']);
-  if(noGP.has(pid)) labels.gp_equity='—';
+  // Dynamic equity labels from Sage (account_name from dim_gl_account)
+  const EQ_LABELS={"18B": {"gp_equity": "GP Fund Equity", "lp_equity": "Pearlmark LP Equity"}, "AAH": {"gp_equity": "GP Fund Equity", "lp_equity": "Sound Mark Equity"}, "FRP": {"gp_equity": "GP Fund Equity", "lp_equity": "Red Stone LP Equity"}, "HOH": {"gp_equity": "GP Fund Equity", "lp_equity": "RockFarmer Equity"}, "LPL": {"lp_equity": "Capital MaCallum Crossing"}, "ML": {"gp_equity": "GP Fund Equity", "lp_equity": "Arrowmark Equity"}, "SRP": {"gp_equity": "GP Fund Equity", "lp_equity": "Sound Mark Equity"}, "WSP": {"lp_equity": "Capital Commitment"}};
+  if(EQ_LABELS[pid]&&EQ_LABELS[pid].lp_equity) labels.lp_equity=EQ_LABELS[pid].lp_equity;
+  if(EQ_LABELS[pid]&&EQ_LABELS[pid].gp_equity) labels.gp_equity=EQ_LABELS[pid].gp_equity;
+  if(!EQ_LABELS[pid]||!EQ_LABELS[pid].gp_equity) labels.gp_equity='GP Equity';
   const subLabels={'CASH AND CASH EQUIVALENTS':'Total Cash','ACCOUNTS RECEIVABLE':'Total Accounts Receivable','PREPAID EXPENSES':'Total Prepaid','ESCROWS AND RESERVES':'Total Escrows','CAPITAL IMPROVEMENTS':'Total Capital Improvements','FIXED ASSETS':'Total Fixed Assets','INTANGIBLE ASSETS':'Total Intangible Assets','CURRENT LIABILITIES':'Total Current Liabilities','LONG-TERM LIABILITIES':'Total Long-Term Liabilities','EQUITY':'Total Equity'};
   const assetSections=new Set(['CASH AND CASH EQUIVALENTS','ACCOUNTS RECEIVABLE','PREPAID EXPENSES','ESCROWS AND RESERVES','CAPITAL IMPROVEMENTS','FIXED ASSETS','INTANGIBLE ASSETS']);
   const liabSections=new Set(['CURRENT LIABILITIES','LONG-TERM LIABILITIES']);
